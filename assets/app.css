@@ -1,0 +1,406 @@
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* 2026-11-01 修复：经典滚动条占宽时 100vw 比可视区宽，致整页横滚、底部要拖动。
+     --sbw 由 app.js 量出（innerWidth − documentElement.clientWidth），无滚动条时为 0。
+     2026-11-01 整体收窄（五十六令）：PC 端 --u 封顶 0.85px——整版压到 656px 宽，
+     字号行距同比缩小，一屏可见信息更多；窄屏仍按视口等比缩放不受影响 */
+  --u:min(0.85px, calc((100vw - var(--sbw, 0px)) / 772));
+  --mu:#01A13E; --huo:#E8443A; --tu:#CD7E32; --jin:#FE9E00; --shui:#4285F4;
+  --ink:#0A0A0A; --label:#6D6D6D; --muted:#B5B5B5; --band:#F3F3F3; --soft:#FAFAFA;
+  --link:#0A88FE; --line:#EAEAEA; --field:#F2F3F5;
+  /* 版面栅格（2026-11-01 六十一令）：命盘圈框与信息卡同宽 724u＝
+     标签 68u＋六列 104.33u；框内留边 14u，内容幅 694u */
+  --cw:calc(724 * var(--u));
+  --labw:calc(68 * var(--u));
+  --colw:calc(104.333 * var(--u));
+  --font:"Source Han Sans SC","Source Han Sans CN","思源黑体 SC","思源黑体","Noto Sans CJK SC",
+         "PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{
+  background:#FEFEFE;color:var(--ink);
+  font-family:var(--font);
+}
+/* 命盘整体圈框（2026-11-01 六十一令）：与信息卡同宽同边，圆角包边 */
+.page{width:min(var(--cw), 100%);margin:calc(8 * var(--u)) auto 0;padding:calc(12 * var(--u)) calc(14 * var(--u)) calc(14 * var(--u));
+      border:1px solid #EAEAEA;border-radius:calc(16 * var(--u));background:#fff;overflow:hidden}
+.grid{display:grid;grid-template-columns:var(--labw) repeat(6,var(--colw));align-items:center}
+.lbl{color:var(--label);font-size:calc(20 * var(--u));letter-spacing:calc(.5 * var(--u))}
+.c{text-align:center}
+
+/* ============ 录入面板 ============ */
+.panel{width:min(calc(772 * var(--u)), 100%);margin:0 auto;padding:0 calc(24 * var(--u))}
+.panel .ph{display:flex;align-items:center;justify-content:space-between;
+           padding:calc(15 * var(--u)) 0 calc(13 * var(--u));color:#1F1F1F}
+/* 收起信息按钮右缘与下方卡片右缘对齐（2026-11-01 五十七令）：不再外扩到面板边缘 */
+.panel .ph .brandrow{display:flex;align-items:center}
+.panel .ph .lg{width:calc(186 * var(--u));height:auto;display:block}
+.panel .ph .tdiv{width:1px;height:calc(50 * var(--u));background:#DCDCDC;
+           margin:0 calc(17 * var(--u));flex:0 0 auto}
+.panel .ph .tblock{display:flex;flex-direction:column;gap:calc(4 * var(--u))}
+.panel .ph .tblock b{font-weight:600;font-size:calc(25 * var(--u));letter-spacing:calc(2.5 * var(--u));
+           color:#1F1F1F;line-height:calc(31 * var(--u))}
+.panel .ph .tblock i{font-style:normal;font-size:calc(15.5 * var(--u));letter-spacing:calc(1.2 * var(--u));
+           color:#A0A0A0;line-height:calc(19 * var(--u))}
+.panel .phline{border:0;border-top:1px solid #ECECEC;
+           margin:0 calc(-24 * var(--u)) calc(14 * var(--u))}
+.panel .ph .fold{height:calc(38 * var(--u));padding:0 calc(15 * var(--u));border:1.4px solid #D8D8D8;
+  border-radius:calc(19 * var(--u));background:#fff;color:#6E6E6E;font-family:inherit;
+  font-size:calc(18 * var(--u));line-height:1;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:calc(6 * var(--u));
+  transition:border-color .2s,color .2s}
+.panel .ph .fold:hover{border-color:#B9B9B9;color:#333}
+.panel .ph .fold .ar{display:inline-flex;align-items:center;justify-content:center;
+  width:calc(12 * var(--u));height:calc(8 * var(--u));transition:transform .22s}
+.panel .ph .fold .ar svg{width:100%;height:100%;display:block}
+.panel.closed .ph .fold .ar{transform:rotate(180deg)}
+/* 收起信息：收起截图内全部内容（含 信息／时间／地点 标题本身） */
+.panel.closed .pbody{display:none}
+.prow{display:flex;align-items:center;gap:calc(10 * var(--u));margin-bottom:calc(14 * var(--u));
+      font-size:calc(21 * var(--u));color:#8A8A8A}
+.prow > label{width:calc(96 * var(--u));flex:0 0 auto;color:#8A8A8A}
+.ipt{flex:1;height:calc(44 * var(--u));border:0;border-radius:calc(22 * var(--u));
+     background:var(--field);padding:0 calc(16 * var(--u));font-size:calc(21 * var(--u));
+     color:#1F1F1F;font-family:inherit;outline:none;min-width:0}
+.ipt::placeholder{color:#AFAFAF}
+.btn{border:0;background:none;font-family:inherit;font-size:calc(21 * var(--u));cursor:pointer}
+.btn.ghost{color:#3F6FE0;border:0;background:transparent;padding:calc(4 * var(--u)) calc(2 * var(--u))}
+.btn.line{border:1px solid #C9D6F5;border-radius:calc(20 * var(--u));color:#3F6FE0;
+          padding:calc(6 * var(--u)) calc(16 * var(--u));background:#fff}
+.btn.blue{background:var(--link);color:#fff;border-radius:calc(22 * var(--u));
+          padding:calc(10 * var(--u)) calc(26 * var(--u))}
+.seg{display:flex;gap:calc(12 * var(--u));flex:1}
+.seg button{flex:1;height:calc(44 * var(--u));border:0;border-radius:calc(22 * var(--u));
+  background:#fff;color:#8A8A8A;font-size:calc(21 * var(--u));cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:calc(6 * var(--u))}
+.seg button.on{background:var(--link);color:#fff}
+.prow .val{flex:1;color:#1F1F1F;font-size:calc(21 * var(--u));text-align:left;
+  background:none;border:0;font-family:inherit;cursor:pointer;padding:0;display:flex;
+  align-items:center;gap:calc(6 * var(--u))}
+.prow .val .ar{color:#B9B9B9;font-size:calc(19 * var(--u))}
+.tabs{display:flex;align-items:center;gap:calc(8 * var(--u));margin-bottom:calc(12 * var(--u));flex-wrap:wrap}
+.tabs .tg{background:var(--field);border-radius:calc(18 * var(--u));overflow:hidden;display:flex;
+  padding:calc(3 * var(--u))}
+.tabs .tg button{border:0;background:none;color:#6E6E6E;font-size:calc(20 * var(--u));
+  padding:calc(6 * var(--u)) calc(18 * var(--u));border-radius:calc(15 * var(--u));cursor:pointer;font-family:inherit}
+.tabs .tg button.on{background:#fff;color:#1F1F1F;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.tabs .mini{border:1px solid #DDD;background:#fff;border-radius:calc(16 * var(--u));color:#6E6E6E;
+  font-size:calc(18 * var(--u));padding:calc(5 * var(--u)) calc(12 * var(--u));cursor:pointer;font-family:inherit}
+.tabs .sp{flex:1}
+
+/* 滚轮 */
+.wheel{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:calc(6 * var(--u));
+       height:calc(210 * var(--u));margin:calc(4 * var(--u)) 0 calc(16 * var(--u));overflow:hidden}
+.wheel::before{content:"";position:absolute;left:0;right:0;top:calc(84 * var(--u));
+  height:calc(42 * var(--u));background:#F0F1F3;border-radius:calc(10 * var(--u));z-index:0}
+.wcol{position:relative;z-index:1;overflow-y:scroll;scroll-snap-type:y mandatory;
+      scrollbar-width:none;-ms-overflow-style:none;cursor:grab;
+      touch-action:pan-y;overscroll-behavior:contain}
+.wcol.dragging{cursor:grabbing;scroll-snap-type:none}
+.wcol::-webkit-scrollbar{display:none}
+.wcol .pad{height:calc(84 * var(--u))}
+.wi{height:calc(42 * var(--u));line-height:calc(42 * var(--u));text-align:center;
+    font-size:calc(23 * var(--u));color:#BFBFBF;scroll-snap-align:center;
+    transition:color .15s,font-size .15s}
+.wi.sel{color:#111;font-size:calc(25 * var(--u))}
+
+/* 反推（2026-11-01 六十令）：改竖排四柱——四列各「柱名／干／支」，参照下方排盘格式 */
+.rev{display:none}
+.rev.on{display:block}
+.rev .rvgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:calc(8 * var(--u));
+  margin-bottom:calc(10 * var(--u))}
+.rev .rvc{display:flex;flex-direction:column;gap:calc(6 * var(--u))}
+.rev .rvc span{color:#8A8A8A;font-size:calc(15 * var(--u));text-align:center;
+  letter-spacing:calc(1 * var(--u))}
+.rev select{height:calc(36 * var(--u));border:1px solid #DEDDD7;border-radius:calc(8 * var(--u));
+  background:#fff;font-size:calc(17 * var(--u));font-family:inherit;padding:0 calc(9 * var(--u));
+  width:100%;color:#1F1F1F;cursor:pointer}
+.rev .hits{margin-top:calc(8 * var(--u));display:flex;flex-wrap:wrap;gap:calc(8 * var(--u))}
+.rev .hits button{border:1px solid #DCE3F5;background:#fff;border-radius:calc(14 * var(--u));
+  color:#3F6FE0;font-size:calc(19 * var(--u));padding:calc(6 * var(--u)) calc(12 * var(--u));
+  cursor:pointer;font-family:inherit}
+.rev .hits .none{color:#B0B0B0;font-size:calc(19 * var(--u))}
+/* 反推按钮（2026-11-01 六十二令）：紧凑居中、墨色与全页一致（原蓝底大按钮弃用） */
+.rev .btn{display:block;margin:calc(2 * var(--u)) auto 0;background:#2E2E2E;color:#fff;
+  border:0;border-radius:calc(7 * var(--u));height:calc(30 * var(--u));
+  padding:0 calc(24 * var(--u));font-size:calc(15 * var(--u));
+  letter-spacing:calc(3 * var(--u));line-height:calc(30 * var(--u));
+  transition:background .18s}
+.rev .btn:hover{background:#000}
+.rev .btn.blue{background:#2E2E2E;color:#fff;border-radius:calc(7 * var(--u));
+  padding:0 calc(24 * var(--u))}
+.rev .btn.blue:hover{background:#000}
+/* 排盘按钮已去（2026-11-01 令）：顶部一改，命盘即时自动重排 */
+
+/* ============ 命盘 ============ */
+/* 元信息行（2026-11-01 三排）：网格锚定——乾造徽标落在标签列（与「盘式」同轴居中），
+   公历等信息均从年柱列左缘起排，与下方表格栅格对齐 */
+.who{display:grid;grid-template-columns:var(--labw) 1fr;align-items:center;
+     grid-auto-rows:min-content;row-gap:calc(3 * var(--u));
+     padding:0 0 calc(8 * var(--u));color:#111;
+     font-size:calc(15 * var(--u));line-height:calc(22 * var(--u))}
+/* 姓名（D94）：左列仅 labw 宽，超 4 字必压「公历」——限宽省略并挂 title 存全名；
+   字距由 1u 收到 .6u，使复姓双名（4 字）仍完整不省略 */
+.who .nm{grid-column:1;grid-row:1;justify-self:center;font-size:calc(15 * var(--u));
+     font-weight:500;color:#111;letter-spacing:calc(.6 * var(--u));
+     max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.who .tag{grid-column:1;grid-row:2;justify-self:center;display:inline-flex;align-items:center;
+     justify-content:center;height:calc(24 * var(--u));padding:0 calc(9 * var(--u));
+     border-radius:calc(4 * var(--u));background:#1F1F1F;color:#fff;
+     font-size:calc(15 * var(--u));letter-spacing:calc(2 * var(--u))}
+.who .wv{display:flex;align-items:center;flex-wrap:wrap;gap:calc(6 * var(--u)) calc(20 * var(--u));
+     padding-left:calc(28.2 * var(--u))}
+.who .r1{grid-column:2;grid-row:1}
+.who .r2{grid-column:2;grid-row:2}
+.who .nm{font-size:calc(15 * var(--u));font-weight:500;color:#111;
+     letter-spacing:calc(1 * var(--u));white-space:nowrap}
+.who .kv{display:inline-flex;align-items:baseline;gap:calc(6 * var(--u));white-space:nowrap;
+     font-variant-numeric:tabular-nums;font-weight:500;letter-spacing:calc(.2 * var(--u))}
+.who .kv i{font-style:normal;color:var(--label);font-size:inherit;
+     font-weight:400;letter-spacing:calc(.5 * var(--u))}
+/* 两行真太阳时上下对齐：同挂右缘（2026-11-01 五十七令） */
+.who .kv.tst{margin-left:auto;min-width:calc(114 * var(--u))}
+
+.head{background:var(--band);height:calc(36 * var(--u));border-radius:calc(4 * var(--u))}
+.head .lbl{padding-left:calc(13 * var(--u))}
+.head .c{color:var(--label);font-size:calc(19.5 * var(--u))}
+
+.star{height:calc(31 * var(--u));margin-top:calc(3 * var(--u))}
+.star .c{color:#4A4A4A;font-size:calc(19.5 * var(--u))}
+.star .lbl{text-align:center}
+
+.pillars{position:relative}
+.pillars .lbl{text-align:center}
+.pillars .c{display:flex;flex-direction:column;align-items:center}
+.gz{display:block;font-family:var(--font);
+  font-weight:700;font-size:calc(36 * var(--u));line-height:calc(48 * var(--u));letter-spacing:calc(1 * var(--u))}
+.pillars .zhi{line-height:calc(48 * var(--u))}
+.sep{position:absolute;top:calc(4 * var(--u));bottom:calc(2 * var(--u));
+     left:calc(var(--labw) + 4 * var(--colw));width:1px;background:var(--line)}
+
+.cang{background:var(--soft);padding:calc(9 * var(--u)) 0 calc(8 * var(--u))}
+.cang .grid{align-items:start}
+/* 藏气标签与整块藏干上下居中（2026-11-01 五十九令） */
+.cang .lbl{display:flex;flex-direction:column;align-items:center;justify-content:center;
+     align-self:stretch;padding-top:0}
+.cang .c{display:flex;flex-direction:column;gap:calc(5 * var(--u))}
+/* 藏干与十神为**一组**，整组居中对齐本柱轴线（2026-11-03 第一百零九令）：
+   旧法只把藏干字居中、十神吊在其右，视觉重心右偏，与上方干支的中轴对不上。
+   十神简称一律一字，故整组居中后各行藏干仍同处一竖线 */
+.cg{display:flex;align-items:baseline;justify-content:center;gap:calc(6 * var(--u))}
+.cg b{flex:0 0 auto;font-family:var(--font);font-weight:500;
+  font-size:calc(19 * var(--u));line-height:calc(19 * var(--u))}
+.cg i{flex:0 0 auto;font-style:normal;
+  color:#6E6E6E;font-size:calc(16 * var(--u));line-height:calc(19 * var(--u))}
+
+.qy{background:var(--band);margin-top:calc(6 * var(--u));
+    padding:calc(6 * var(--u)) calc(13 * var(--u)) calc(7 * var(--u));
+    border-radius:calc(4 * var(--u))}
+.qy .r{display:flex;align-items:center;justify-content:space-between;gap:calc(10 * var(--u));
+       position:relative;
+       color:#6F6F6F;font-size:calc(16 * var(--u));line-height:calc(23 * var(--u))}
+.qy .r + .r{margin-top:calc(1 * var(--u))}
+.qy .rt{display:flex;align-items:center;gap:calc(4 * var(--u));white-space:nowrap}
+/* 建国前流年的年号纪年（九十四令，九十五令左移）：以**整行中线**绝对居中（九十四令按剩余余白
+   居中会偏右）；字号与颜色完全随 .qy .r，不另设；max-width 让开两端文字防重叠，超长省略 */
+.qy .ln-era{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+            max-width:calc(100% - calc(280 * var(--u)));text-align:center;
+            overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qy .ln-era:empty{display:none}
+.qy .ico-info{width:calc(18 * var(--u));height:calc(18 * var(--u));color:#B9B9B9}
+a.locate{color:var(--link);text-decoration:none;cursor:pointer;white-space:nowrap}
+a.locate:hover{text-decoration:underline}
+
+/* 大运／流年：标签竖排居中，列可横拖 */
+.sect{margin-top:calc(7 * var(--u))}
+.sect .wrap2{position:relative;display:grid;grid-template-columns:var(--labw) 1fr;align-items:stretch}
+.sect .lab{display:flex;flex-direction:column;align-items:center;justify-content:center;
+           color:var(--label);font-size:calc(19 * var(--u))}
+.sect .lab .v{writing-mode:vertical-rl;letter-spacing:calc(2 * var(--u))}
+.strip{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none;touch-action:pan-x}
+.strip::-webkit-scrollbar{display:none}
+/* 溢出渐隐（九十七令 2026-11-02）：原用 -webkit-mask-image 实现，导出／打印 PDF 时
+   Chrome 会把整条渲染成**实心黑块**（大运 13 列必溢出、必中招；流年仅 2 列不溢出故正常）。
+   改为挂在 .wrap2 上的伪元素白色渐变——不依赖 mask，屏幕、打印、任何 PDF 导出方式均安全。
+   ::after 为绝对定位，不参与 grid 布局。 */
+.sect .wrap2::after{content:"";position:absolute;top:0;right:0;bottom:0;
+  width:calc(46 * var(--u));pointer-events:none;opacity:0;
+  background:linear-gradient(to right,rgba(255,255,255,0),#FFF 78%)}
+.sect .wrap2.more::after{opacity:1}
+.cols{display:flex;align-items:stretch}
+/* 2026-11-01 令（终版）：列宽 57u，一屏恰显 10 列（流年十年不拖动）；
+   大运 13 列显不全，向右拖动即可 */
+.col{flex:0 0 calc(57 * var(--u));display:flex;flex-direction:column;align-items:center;
+     padding:calc(3 * var(--u)) 0 calc(4 * var(--u));border-radius:calc(3 * var(--u));
+     cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .12s ease}
+.col:hover{background:#F7F7F7}
+.col.on{background:var(--band)}
+.yr{font-size:calc(18 * var(--u));line-height:calc(24 * var(--u));color:#111}
+.age{font-size:calc(14 * var(--u));line-height:calc(20 * var(--u));color:#6E6E6E}
+.pair{display:flex;align-items:baseline;justify-content:center;gap:calc(2 * var(--u));line-height:calc(26 * var(--u))}
+.pair b{font-family:var(--font);font-weight:600;font-size:calc(20 * var(--u))}
+.pair i{font-style:normal;color:#7A7A7A;font-size:calc(15 * var(--u))}
+.pre{color:#3A3A3A;font-size:calc(18 * var(--u));line-height:calc(26 * var(--u))}
+
+.mu{color:var(--mu)} .huo{color:var(--huo)} .tu{color:var(--tu)}
+.jin{color:var(--jin)} .shui{color:var(--shui)}
+
+/* 落款全黑（2026-11-01 令）：标为图片，署名与三模块文字一律纯黑 */
+.foot{margin:calc(18 * var(--u)) auto calc(16 * var(--u));width:min(calc(772 * var(--u)), 100%);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      text-align:center;color:#000;font-size:calc(13.5 * var(--u));
+      line-height:calc(22 * var(--u));letter-spacing:calc(.2 * var(--u))}
+/* 标上一道细分割线（2026-11-01 令），与命盘同宽居中 */
+.foot .fline{width:min(var(--cw), 100%);border:0;border-top:1px solid #E4E4E4;
+      margin:0 auto calc(15 * var(--u))}
+.foot .fl{display:flex;flex-direction:column;align-items:center;width:100%}
+.foot .brand{display:inline-block;line-height:0;
+      border-bottom:0!important;opacity:.92;transition:opacity .25s}
+.foot .brand:hover{opacity:1}
+.foot .brand img{width:calc(178 * var(--u));height:auto;display:block}
+.foot .l1{margin-top:calc(9 * var(--u));color:#000;font-size:calc(13.5 * var(--u));
+      line-height:calc(20 * var(--u));letter-spacing:calc(.6 * var(--u));white-space:nowrap}
+.foot .fr{margin-top:calc(11 * var(--u));display:flex;align-items:center;justify-content:center;
+      flex-wrap:wrap;width:100%}
+.foot .fr .m{color:#000;font-size:calc(12.5 * var(--u));line-height:calc(21 * var(--u));
+      letter-spacing:calc(.1 * var(--u));white-space:nowrap;padding:0 calc(17 * var(--u));
+      position:relative;display:inline-flex;align-items:baseline}
+.foot .fr .m i{font-style:normal;color:#000}
+.foot .fr .m b{font-weight:400;color:#000}
+.foot .fr .m + .m{border-left:1px solid #EBEBEB}
+.foot .fr .m:first-child{padding-left:0}
+.foot .fr .m:last-child{padding-right:0}
+.foot .b{color:#000;font-weight:500}
+.foot a{color:#000;text-decoration:none;border-bottom:1px solid #D8D8D8;transition:color .2s,border-color .2s}
+.foot a:hover{color:#000;border-color:#9E9E9E}
+.foot .sp{color:#DCDCDC;margin:0 calc(3 * var(--u))}
+
+@media print{
+  .panel{display:none}
+  .page,.foot{width:100%}
+  :root{--u:0.52pt}
+  .strip{overflow:visible}
+  .cols{flex-wrap:nowrap}
+  /* 打印时全部列展开、无滚动，渐隐无意义；一并隐藏防任何残留渲染（九十七令） */
+  .sect .wrap2::after{display:none}
+}
+
+@media (max-width:560px){
+  .foot .fr .m{padding:0 calc(11 * var(--u));font-size:calc(12 * var(--u))}
+  .foot .fr .m:first-child{padding-left:0}
+  .foot .fr .m:last-child{padding-right:0}
+}
+
+/* ===== 录入卡片（2026-11-01 参照六爻页：边界、留边、行间距对齐参考图）===== */
+.pbody{padding-bottom:calc(6 * var(--u))}
+/* 信息卡底色（2026-11-01 六十三令，参照六爻页）：浅暖灰面、白字段浮于其上 */
+.card{border:1px solid #F0EFEA;border-radius:calc(16 * var(--u));background:#F7F6F2;
+      padding:calc(10 * var(--u))}
+/* 节标题留在左列、相对右列两行**纵向居中**，内容拆两行（2026-11-03 第一百零四令）
+   六十四令「标题与字段同行」仍成立（标题不与字段抢行），本令只是把右列由一行改两行，
+   标题 grid-row 跨两行、align-self:center，故恒在两行中线上。 */
+/* 第二列用 minmax(0,1fr)：否则栅格会按最窄内容撑宽，窄屏时顶出横向滚动 */
+.srow{display:grid;grid-template-columns:calc(78 * var(--u)) minmax(0, 1fr);
+      column-gap:calc(4 * var(--u));row-gap:calc(8 * var(--u));
+      background:#fff;border:1px solid #EDEBE4;border-radius:calc(12 * var(--u));
+      padding:calc(12 * var(--u)) calc(14 * var(--u))}
+.srow + .srow{margin-top:calc(9 * var(--u))}
+.shead{grid-column:1;grid-row:1 / span 2;align-self:center;
+      display:flex;align-items:center;gap:calc(9 * var(--u));margin:0}
+.shead::before{content:"";flex:0 0 auto;width:calc(3.5 * var(--u));height:calc(16 * var(--u));
+       background:#B03A2E;border-radius:calc(2 * var(--u))}
+.shead span{font-weight:600;font-size:calc(20 * var(--u));color:#1F1F1F;
+       letter-spacing:calc(1.5 * var(--u))}
+/* 右列两行：自列左起排、控件吃满到右缘——既不左留白（整组右推），也不右留白；
+   节内两行左右缘严格对齐，字头一律贴同一竖线（第一百零八令） */
+.srow .pmod{grid-column:2;display:flex;align-items:center;justify-content:flex-start;
+      gap:calc(10 * var(--u));min-width:0;width:100%}
+.pmod .fl{flex:0 0 calc(42 * var(--u));color:#3A3A3A;font-size:calc(18 * var(--u));
+      letter-spacing:calc(.5 * var(--u))}
+.pmod .fg{display:flex;align-items:center;justify-content:flex-start;
+      gap:calc(10 * var(--u));flex:1 1 auto;min-width:0}
+/* 历法切换（公历／农历／反推）：占满首行余宽，三格等分；「现时」定宽于右 */
+.pmod .tg{display:flex;flex:1 1 auto;min-width:0;width:auto;
+      border:1px solid #DEDDD7;border-radius:calc(8 * var(--u));overflow:hidden;background:#fff}
+.pmod .tg button{flex:1 1 0;border:0;background:none;color:#7A7A7A;
+      font-size:calc(16 * var(--u));height:calc(34 * var(--u));padding:0;
+      cursor:pointer;font-family:inherit;transition:background .15s,color .15s}
+.pmod .tg button + button{border-left:1px solid #EDEDED}
+.pmod .tg button:hover{color:#3A3A3A}
+.pmod .tg button.on{background:#F1F1F1;color:#1F1F1F;font-weight:500}
+.pmod .ipt{flex:1 1 auto;min-width:0;height:calc(36 * var(--u));border:1px solid #DEDDD7;
+      border-radius:calc(8 * var(--u));background:#fff;padding:0 calc(12 * var(--u));
+      font-size:calc(18 * var(--u))}
+.pmod .ipt:focus{outline:none;border-color:#B9B9B9}
+/* 经纬两框等分（第一百零四令：与省市行同宽，取消旧的 118u 上限） */
+.pmod .ipt.lon,.pmod .ipt.lat{flex:1 1 0;width:auto;max-width:none;min-width:0;
+      padding:0 calc(9 * var(--u));font-size:calc(16 * var(--u))}
+/* 真太阳时字号 16u（八十九令），复选框同步 */
+.pmod .cb{display:flex;align-items:center;gap:calc(6 * var(--u));flex:0 0 auto;
+      color:#6E6E6E;font-size:calc(16 * var(--u));cursor:pointer;white-space:nowrap}
+.pmod .cb input{width:calc(16 * var(--u));height:calc(16 * var(--u));margin:0}
+/* 性别连体分段（七十五令去符号）：与姓名框同宽，两格等分 */
+.pmod .seg{display:flex;flex:1 1 auto;min-width:0;width:auto;
+      gap:0;                             /* 组内紧凑；控件吃满右列余宽 */
+      border:1px solid #DEDDD7;border-radius:calc(8 * var(--u));overflow:hidden;background:#fff}
+.pmod .seg button{flex:1 1 0;height:calc(34 * var(--u));padding:0;
+      border:0;border-radius:0;background:#fff;
+      color:#6E6E6E;font-size:calc(17 * var(--u));cursor:pointer;font-family:inherit;
+      display:inline-flex;align-items:center;justify-content:center;
+      transition:background .18s,color .18s}
+.pmod .seg button + button{border-left:1px solid #E2E2E2}
+.pmod .seg button.on{background:#F1F1F1;color:#1F1F1F;font-weight:500}
+.pmod .btn.ghost{flex:0 0 auto;font-size:calc(17 * var(--u));padding:0 calc(8 * var(--u));
+      height:calc(36 * var(--u));color:#3F6FE0}
+/* 八十八令：右内边距 20u——箭头占右 8–18u，右 pad 必须 ≥18u＋2u 间隙，
+   文字才永不进入箭头区（此前 14u 是「遮字」复发根因之一）；
+   宽度＝最坏文案（数字 0.62em／CJK 1em）×1.12＋框架 31u（左 pad7＋右 pad20＋隙4）。
+   第一百零四令：宽度改作 flex 基准，行内余白由 grow 分摊，不再各自固定；
+   第一百零八令：px 最小宽度全数去掉（见下 #fy 一组）——小 --u 时 px 下限不缩，
+   会把整行挤出右列、压到节标题上，此即「重叠」根因 */
+select.sel{-webkit-appearance:none;appearance:none;height:calc(36 * var(--u));min-width:0;
+      border:1px solid #DEDDD7;border-radius:calc(8 * var(--u));background-color:#fff;
+      color:#1F1F1F;font-family:inherit;font-size:calc(16 * var(--u));cursor:pointer;
+      padding:0 calc(20 * var(--u)) 0 calc(7 * var(--u));
+      background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' fill='none' stroke='%239A9A9A' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+      background-repeat:no-repeat;background-position:right calc(8 * var(--u)) center;
+      background-size:calc(10 * var(--u)) calc(6 * var(--u))}
+select.sel:focus{outline:none;border-color:#B9B9B9;box-shadow:0 0 0 calc(2 * var(--u)) rgba(0,0,0,.04)}
+/* 反推区归「时间」节（本令前悬在卡尾、看着像第四节）：作为该节第三行，占右列；
+   四组下拉等分右列，按钮居中于该区 */
+.srow.hasrev .shead{grid-row:1 / span 3}
+.rev{grid-column:2;margin:calc(12 * var(--u)) 0 0}
+/* fy「2026年」94 fm「11月」72 fd「31日」72 fh「23-子时」101 fmi「59分」72（u）——均作 flex 基准，
+   一律 min-width:0：字随 u 等比缩，无需 px 兜底；px 下限只会把行顶出右列（第一百零八令） */
+#fy{width:calc(94 * var(--u));min-width:0} #fm{width:calc(72 * var(--u));min-width:0}
+/* 农历模式：fm「闰十一月」103、fd「二十一」85 */
+.panel.lunar #fm{width:calc(103 * var(--u));min-width:0}
+.panel.lunar #fd{width:calc(85 * var(--u));min-width:0}
+#fd{width:calc(72 * var(--u));min-width:0} #fh{width:calc(101 * var(--u));min-width:0} #fmi{width:calc(72 * var(--u));min-width:0}
+/* 时间第二行：五格按基准比例吸收余宽，行右缘与上一行齐 */
+#fy,#fm,#fd,#fh,#fmi{flex:1 1 auto}
+/* 省市下拉「黑龙江省」/「西双版纳」等最坏 4 字 103u（长州郡名展示端缩短，见 app.js shortCity）
+   第一百零四令：两格等分整行 */
+#fProv,#fCity{flex:1 1 0;width:calc(103 * var(--u));min-width:0}
+.now{flex:0 0 auto;width:calc(100 * var(--u));height:calc(36 * var(--u));
+      border:1px solid #DEDDD7;border-radius:calc(8 * var(--u));background:#fff;
+      color:#3A3A3A;font-family:inherit;font-size:calc(16.5 * var(--u));cursor:pointer;
+      transition:border-color .18s,background .18s}
+.tog{height:calc(34 * var(--u));padding:0 calc(14 * var(--u));border:1px dashed #DCDCDC;
+      border-radius:calc(8 * var(--u));background:#fff;color:#6E6E6E;font-family:inherit;
+      font-size:calc(16.5 * var(--u));cursor:pointer;display:inline-flex;align-items:center;
+      gap:calc(8 * var(--u));transition:border-color .18s,color .18s}
+.tog:hover{border-color:#C3C3C3;color:#333}
+.tog .ar{font-size:calc(14 * var(--u));line-height:1;color:#9A9A9A;transition:transform .2s}
+.tog.on .ar{transform:rotate(180deg)}
+.wheel.closed{display:none}
+/* 轻量提示（2026-11-02 审计 D88）：农历越界／真太阳时缺经度等静默回退场景的可见反馈 */
+.toast{position:fixed;left:50%;bottom:calc(24 * var(--u));
+  transform:translateX(-50%) translateY(calc(8 * var(--u)));
+  background:rgba(31,31,31,.94);color:#fff;font-family:var(--font);
+  font-size:calc(17 * var(--u));line-height:1.35;
+  padding:calc(9 * var(--u)) calc(16 * var(--u));border-radius:calc(10 * var(--u));
+  box-shadow:0 calc(4 * var(--u)) calc(18 * var(--u)) rgba(0,0,0,.18);
+  opacity:0;pointer-events:none;z-index:999;white-space:nowrap;
+  transition:opacity .2s ease,transform .2s ease}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
